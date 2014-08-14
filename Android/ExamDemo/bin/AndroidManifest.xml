@@ -23,6 +23,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="ShowMistakeActivity" android:label="查看我的错题"></activity>
     </application>
 
 </manifest>

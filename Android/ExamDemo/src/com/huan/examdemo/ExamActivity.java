@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -32,16 +33,17 @@ import com.huan.examdemo.db.DB;
 import com.huan.examdemo.db.DBUtils;
 
 public class ExamActivity extends Activity {
-	private TextView tvTitle;
+	private TextView tvTitle, tvIndicator;
 	private RadioGroup radioGroup;
 	private RadioButton radioA, radioB, radioC, radioD;
-	private Button btnNext;
+	private Button btnNext, btnPre;
 	private DB db;
 	private SQLiteDatabase dbWrite, dbRead;
 	private ExamData examData;//没用到这个
 	private Cursor c;
 	private static final String url = "http://2.bjtuweb.sinaapp.com/getExam.php";
 	private int current_number = 2;  //当前题号
+	private int TOTAL_NUM; //每次总共题数
 	private Handler handlerQuery = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
@@ -58,7 +60,7 @@ public class ExamActivity extends Activity {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				for (int i = 0; i < 10; i++) {
+				for (int i = 0; i < TOTAL_NUM; i++) {
 					JSONObject jsonObject = new JSONObject();
 					try {
 						jsonObject = jsonArray.getJSONObject(i);
@@ -112,6 +114,8 @@ public class ExamActivity extends Activity {
 				radioB.setText("B、" + tvradioB);
 				radioC.setText("C、" + tvradioC);
 				radioD.setText("D、" + tvradioD);
+				
+				tvIndicator.setText("1/" + TOTAL_NUM);
 			}
 		}
 	};
@@ -135,6 +139,9 @@ public class ExamActivity extends Activity {
 				radioB.setText("B、" + tvradioB);
 				radioC.setText("C、" + tvradioC);
 				radioD.setText("D、" + tvradioD);
+				
+				tvIndicator.setText(current_number-1 + "/" + TOTAL_NUM);
+				
 				//清除radioGroup的上一次选中状态
 				radioGroup.clearCheck();
 			} else {
@@ -160,29 +167,42 @@ public class ExamActivity extends Activity {
 
 	//10道题做完时判题
 	private void Judge() {
-		Cursor cursor = dbRead.query(DB.DBDONE_TABLE_NAME, null, null, null,
+		Cursor cursor = dbRead.query(DB.EXAM_TABLE_NAME, null, null, null,
 				null, null, null);
 		int rightAnswer = 0;
 		while (cursor.moveToNext()) {
 			String _answer = cursor.getString(cursor
-					.getColumnIndex(DB.DBDONE_COLUMN_ANSWER));
+					.getColumnIndex(DB.EXAM_COLUMN_ANSWER));
 			String _userAnswer = cursor.getString(cursor
-					.getColumnIndex(DB.DBDONE_COLUMN_USER_ANSWER));
+					.getColumnIndex(DB.EXAM_COLUMN_USER_ANSWER));
 			if (_answer.equals(_userAnswer))
 				rightAnswer++;
 		}
 		Toast.makeText(ExamActivity.this, "您答对了" + rightAnswer + "道题",
 				Toast.LENGTH_LONG).show();
+		if(rightAnswer==TOTAL_NUM)
+			Toast.makeText(ExamActivity.this, "您全部答对了，厉害！",
+					Toast.LENGTH_LONG).show();
+		else{
+			Intent intent = new Intent(ExamActivity.this,
+					ShowMistakeActivity.class);
+			startActivity(intent);
+		}
 	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_exam);
+		
+		//设置总共题数
+		TOTAL_NUM = 10;
 
 		tvTitle = (TextView) findViewById(R.id.tvTitle);
+		tvIndicator = (TextView) findViewById(R.id.tvIndicator);
 		radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
 		btnNext = (Button) findViewById(R.id.btnNext);
+		btnPre = (Button) findViewById(R.id.btnPre);
 		radioA = (RadioButton) findViewById(R.id.radioA);
 		radioB = (RadioButton) findViewById(R.id.radioB);
 		radioC = (RadioButton) findViewById(R.id.radioC);
@@ -192,6 +212,9 @@ public class ExamActivity extends Activity {
 		db = new DB(ExamActivity.this);
 		dbRead = db.getReadableDatabase();
 		dbWrite = db.getWritableDatabase();
+		
+		//清空数据库，读取新的数据写入
+		dbWrite.execSQL("DELETE FROM " + DB.EXAM_TABLE_NAME);
 
 		new Thread(new Runnable() {
 			@Override
@@ -227,11 +250,14 @@ public class ExamActivity extends Activity {
 					System.out.println(useranswer + "被选中了");
 	
 					ContentValues cv = new ContentValues();
-					cv.put(DB.DBDONE_COLUMN_ID, _id);
-					cv.put(DB.DBDONE_COLUMN_ANSWER, answer);
-					cv.put(DB.DBDONE_COLUMN_USER_ANSWER, useranswer);
+					//cv.put(DB.EXAM_COLUMN_ID, _id);
+					//cv.put(DB.DBDONE_COLUMN_ANSWER, answer);
+					cv.put(DB.EXAM_COLUMN_USER_ANSWER, useranswer);
+					//更新用户所选答案
+					dbWrite.update(DB.EXAM_TABLE_NAME, cv, "_id=?", new String[] { _id + "" });
 	
 					//记录已做题到 DB.DBDONE_TABLE_NAME 表中
+					/*
 					Cursor cursor = dbRead.query(DB.DBDONE_TABLE_NAME, null,
 							"_id=?", new String[] { _id + "" }, null, null, null);
 					if (cursor.moveToNext()) {
@@ -244,6 +270,7 @@ public class ExamActivity extends Activity {
 						dbWrite.insert(DB.DBDONE_TABLE_NAME, null, cv);
 						System.out.println("插入成功");
 					}
+					*/
 				}
 			}
 		});
@@ -253,9 +280,10 @@ public class ExamActivity extends Activity {
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
+		System.out.println("MainActivity OnDestroy");
 		//清空数据表
-		dbWrite.execSQL("DELETE FROM " + DB.EXAM_TABLE_NAME);
-		dbWrite.execSQL("DELETE FROM " + DB.DBDONE_TABLE_NAME);
+		//dbWrite.execSQL("DELETE FROM " + DB.EXAM_TABLE_NAME);
+		//dbWrite.execSQL("DELETE FROM " + DB.DBDONE_TABLE_NAME);
 	}
 
 	/*测试用数据库，没用了

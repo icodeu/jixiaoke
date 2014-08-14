@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.nfc.NfcAdapter.CreateBeamUrisCallback;
 
 public class DB extends SQLiteOpenHelper {
+	public static final String EXAM_DB_NAME = "examdemo";
+	
 	public static final String EXAM_TABLE_NAME = "exam";
 	public static final String EXAM_COLUMN_ID = "_id";
 	public static final String EXAM_COLUMN_TITLE = "title";
@@ -16,14 +18,18 @@ public class DB extends SQLiteOpenHelper {
 	public static final String EXAM_COLUMN_RADIOC = "radioC";
 	public static final String EXAM_COLUMN_RADIOD = "radioD";
 	public static final String EXAM_COLUMN_ANSWER = "answer";
+	public static final String EXAM_COLUMN_USER_ANSWER = "user_answer";
+	public static final String EXAM_COLUMN_RESULT = "result";
 	
+	/*
 	public static final String DBDONE_TABLE_NAME = "exam_done";
 	public static final String DBDONE_COLUMN_ID = "_id";
 	public static final String DBDONE_COLUMN_ANSWER = "answer";
 	public static final String DBDONE_COLUMN_USER_ANSWER = "user_answer";
+	*/
 
 	public DB(Context context) {
-		super(context, "examdemo", null, 1);
+		super(context, EXAM_DB_NAME, null, 1);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -37,14 +43,17 @@ public class DB extends SQLiteOpenHelper {
 				+ " TEXT DEFAULT \"\"," + EXAM_COLUMN_RADIOC
 				+ " TEXT DEFAULT \"\"," + EXAM_COLUMN_RADIOD
 				+ " TEXT DEFAULT \"\"," + EXAM_COLUMN_ANSWER
+				+ " TEXT DEFAULT \"\"," + EXAM_COLUMN_USER_ANSWER
+				+ " TEXT DEFAULT \"\"," + EXAM_COLUMN_RESULT
 				+ " TEXT DEFAULT \"\""
 				+ ")");
-		
+		/*
 		db.execSQL("CREATE TABLE " + DBDONE_TABLE_NAME + "(" + DBDONE_COLUMN_ID
 				+ " INTEGER," + DBDONE_COLUMN_ANSWER
 				+ " TEXT DEFAULT \"\"," + DBDONE_COLUMN_USER_ANSWER
 				+ " TEXT DEFAULT \"\""
 				+ ")");
+		 */
 	}
 
 	@Override

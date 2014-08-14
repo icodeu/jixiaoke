@@ -12,7 +12,7 @@
         android:orientation="vertical" >
 
         <TextView
-            android:id="@+id/tvTitle"
+            android:id="@+id/errorTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#aaccff"
@@ -20,40 +20,47 @@
             android:text="加载中，请稍等" />
 
         <RadioGroup
-            android:id="@+id/radioGroup"
+            android:id="@+id/errorradioGroup"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:orientation="vertical" >
 
             <RadioButton
-                android:id="@+id/radioA"
+                android:id="@+id/errorradioA"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:tag="A" >
             </RadioButton>
 
             <RadioButton
-                android:id="@+id/radioB"
+                android:id="@+id/errorradioB"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:tag="B" >
             </RadioButton>
 
             <RadioButton
-                android:id="@+id/radioC"
+                android:id="@+id/errorradioC"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:tag="C" >
             </RadioButton>
 
             <RadioButton
-                android:id="@+id/radioD"
+                android:id="@+id/errorradioD"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:tag="D" >
             </RadioButton>
         </RadioGroup>
+
+        <TextView
+            android:id="@+id/tvRightAnswer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="正确答案  : " />
     </LinearLayout>
 
     <RelativeLayout
@@ -63,7 +70,7 @@
         android:orientation="horizontal" >
 
         <Button
-            android:id="@+id/btnPre"
+            android:id="@+id/errorbtnPre"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -71,7 +78,7 @@
             android:background="@drawable/btnbg" />
 
         <Button
-            android:id="@+id/btnNext"
+            android:id="@+id/errorbtnNext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -79,7 +86,7 @@
             android:background="@drawable/btnnextbg" />
 
         <TextView
-            android:id="@+id/tvIndicator"
+            android:id="@+id/errorIndicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"

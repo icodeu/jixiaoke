@@ -2,6 +2,9 @@
 
 	include 'mysql_connect.php';
 	
+	//每次随机生成总题数，必须和android客户端中保持一致
+	$TOTAL_NUM = 10;
+	
 	$data = array();
 	$n = 0;
 	
@@ -34,7 +37,7 @@
 	
     for (;;)
 	{
-		if ($n==9)
+		if ($n==$TOTAL_NUM-1)
 			break;
 		$result = mysql_query("SELECT * FROM exam order by rand() limit 1");
 		$row = mysql_fetch_array($result);
